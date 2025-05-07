@@ -85,6 +85,10 @@ module control(
             4'd12: begin  // UPDATE_PC
                 pc_ld = (zero | negative) ? 1'b1 : 1'b0;
             end
+
+            default: begin  // cover other state values
+                // no control signals
+            end
         endcase
     end
 
