@@ -135,7 +135,7 @@ async def test_datapath_sequential(dut):
         WRITEBACK,
         UPDATE_PC
     ]
-    for _ in range(3):
+    for _ in range(5):
         for st in states:
             # Drive the state and control signals
             dut.state.value = st
