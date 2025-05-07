@@ -1,7 +1,7 @@
 module control(
     input wire clk,
     input wire rst,
-    input wire [2:0] state,    // Current state from datapath
+    input wire [3:0] state,    // Current state from datapath (4-bit FSM)
     input wire zero,           // Zero flag from ALU
     input wire negative,       // Negative flag from ALU
     output reg a_ld,           // Load enable for a register
@@ -39,40 +39,50 @@ module control(
         pc_ld = 1'b0;
 
         case (state)
-            3'b000: begin  // FETCH_A
+            4'd0: begin  // FETCH_A
                 mem_read = 1'b1;
+            end
+            4'd1: begin  // LOAD_A
                 a_ld = 1'b1;
             end
 
-            3'b001: begin  // FETCH_B
+            4'd2: begin  // FETCH_B
                 mem_read = 1'b1;
+            end
+            4'd3: begin  // LOAD_B
                 b_ld = 1'b1;
             end
 
-            3'b010: begin  // FETCH_C
+            4'd4: begin  // FETCH_C
                 mem_read = 1'b1;
+            end
+            4'd5: begin  // LOAD_C
                 c_ld = 1'b1;
             end
 
-            3'b011: begin  // FETCH_MEM_A
+            4'd6: begin  // FETCH_MEM_A
                 mem_read = 1'b1;
+            end
+            4'd7: begin  // LOAD_MEM_A
                 mem_a_ld = 1'b1;
             end
 
-            3'b100: begin  // FETCH_MEM_B
+            4'd8: begin  // FETCH_MEM_B
                 mem_read = 1'b1;
+            end
+            4'd9: begin  // LOAD_MEM_B
                 mem_b_ld = 1'b1;
             end
 
-            3'b101: begin  // EXECUTE
+            4'd10: begin  // EXECUTE
                 result_ld = 1'b1;
             end
 
-            3'b110: begin  // WRITEBACK
+            4'd11: begin  // WRITEBACK
                 mem_write = 1'b1;
             end
 
-            3'b111: begin  // UPDATE_PC
+            4'd12: begin  // UPDATE_PC
                 pc_ld = (zero | negative) ? 1'b1 : 1'b0;
             end
         endcase

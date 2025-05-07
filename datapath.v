@@ -11,12 +11,27 @@ module datapath(
     input wire mem_read,       // Memory read enable
     input wire mem_write,      // Memory write enable
     input wire pc_ld,          // Program counter load enable
-    input wire [2:0] state,    // Current state from control
+    input wire [3:0] state,    // Current 4-bit state from control
     // Outputs
     output wire zero,          // Zero flag to control
     output wire negative,      // Negative flag to control
     output wire [63:0] mem_data_out // Data read from memory
 );
+
+    // State codes (4-bit FSM)
+    localparam FETCH_A     = 4'd0;
+    localparam LOAD_A      = 4'd1;
+    localparam FETCH_B     = 4'd2;
+    localparam LOAD_B      = 4'd3;
+    localparam FETCH_C     = 4'd4;
+    localparam LOAD_C      = 4'd5;
+    localparam FETCH_MEM_A = 4'd6;
+    localparam LOAD_MEM_A  = 4'd7;
+    localparam FETCH_MEM_B = 4'd8;
+    localparam LOAD_MEM_B  = 4'd9;
+    localparam EXECUTE     = 4'd10;
+    localparam WRITEBACK   = 4'd11;
+    localparam UPDATE_PC   = 4'd12;
 
     // Internal registers
     reg [63:0] pc;            // Program counter
@@ -69,15 +84,21 @@ module datapath(
     // Set memory address based on state
     always @(*) begin
         case (state)
-            3'b000: mem_addr = pc;           // FETCH_A: read A from current PC
-            3'b001: mem_addr = pc + 64'd1;   // FETCH_B: read B from PC+1
-            3'b010: mem_addr = pc + 64'd2;   // FETCH_C: read C from PC+2
-            3'b011: mem_addr = a_reg;        // FETCH_MEM_A: read from address A
-            3'b100: mem_addr = b_reg;        // FETCH_MEM_B: read from address B
-            3'b110: mem_addr = b_reg;        // WRITEBACK: write to address B
-            default: mem_addr = 64'h0;
+            FETCH_A, LOAD_A:
+                mem_addr = pc;
+            FETCH_B, LOAD_B:
+                mem_addr = pc + 64'd1;
+            FETCH_C, LOAD_C:
+                mem_addr = pc + 64'd2;
+            FETCH_MEM_A, LOAD_MEM_A:
+                mem_addr = a_reg;
+            FETCH_MEM_B, LOAD_MEM_B:
+                mem_addr = b_reg;
+            WRITEBACK:
+                mem_addr = b_reg;
+            default:
+                mem_addr = 64'h0;
         endcase
-        //$display("State: %d, PC: %d, mem_addr: %d", state, pc, mem_addr);
     end
 
     // Register updates

@@ -4,12 +4,12 @@ module pc_incre(
     input wire [63:0] pc,         // Current PC value
     input wire [63:0] c,          // Branch target address
     input wire pc_ld,             // PC load enable from control
-    input wire [2:0] state,       // Current state
+    input wire [3:0] state,       // Current 4-bit state
     output reg [63:0] next_pc     // Next PC value
 );
 
-    // State for UPDATE_PC
-    localparam UPDATE_PC = 3'b111;
+    // State code for UPDATE_PC
+    localparam UPDATE_PC = 4'd12;
 
     // Calculate next PC value
     wire [63:0] pc_plus_24;

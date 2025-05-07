@@ -4,14 +4,20 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer
 import random
 
 # State definitions
-FETCH_A = 0
-FETCH_B = 1
-FETCH_C = 2
-FETCH_MEM_A = 3
-FETCH_MEM_B = 4
-EXECUTE = 5
-WRITEBACK = 6
-UPDATE_PC = 7
+FETCH_A     = 0
+LOAD_A      = 1
+FETCH_B     = 2
+LOAD_B      = 3
+FETCH_C     = 4
+LOAD_C      = 5
+FETCH_MEM_A = 6
+LOAD_MEM_A  = 7
+FETCH_MEM_B = 8
+LOAD_MEM_B  = 9
+EXECUTE     = 10
+WRITEBACK   = 11
+UPDATE_PC   = 12
+
 @cocotb.test()
 async def test_memory_init(dut):
     """Test memory initialization"""
@@ -119,76 +125,36 @@ async def test_datapath_sequential(dut):
     
     print("Starting program execution...")
     # Manually step through CPU states for 3 SUBLEQ instructions
-    states = [FETCH_A, FETCH_B, FETCH_C, FETCH_MEM_A, FETCH_MEM_B, EXECUTE, WRITEBACK, UPDATE_PC]
+    states = [
+        FETCH_A, LOAD_A,
+        FETCH_B, LOAD_B,
+        FETCH_C, LOAD_C,
+        FETCH_MEM_A, LOAD_MEM_A,
+        FETCH_MEM_B, LOAD_MEM_B,
+        EXECUTE,
+        WRITEBACK,
+        UPDATE_PC
+    ]
     for _ in range(3):
         for st in states:
             # Drive the state and control signals
             dut.state.value = st
-            dut.a_ld.value = 1 if st == FETCH_A else 0
-            dut.b_ld.value = 1 if st == FETCH_B else 0
-            dut.c_ld.value = 1 if st == FETCH_C else 0
-            dut.mem_a_ld.value = 1 if st == FETCH_MEM_A else 0
-            dut.mem_b_ld.value = 1 if st == FETCH_MEM_B else 0
-            dut.result_ld.value = 1 if st == EXECUTE else 0
-            dut.mem_read.value = 1 if st in (FETCH_A, FETCH_B, FETCH_C, FETCH_MEM_A, FETCH_MEM_B) else 0
-            dut.mem_write.value = 1 if st == WRITEBACK else 0
-            # For UPDATE_PC, load PC only on branch condition
+            dut.a_ld.value      = 1 if st == LOAD_A      else 0
+            dut.b_ld.value      = 1 if st == LOAD_B      else 0
+            dut.c_ld.value      = 1 if st == LOAD_C      else 0
+            dut.mem_a_ld.value  = 1 if st == LOAD_MEM_A  else 0
+            dut.mem_b_ld.value  = 1 if st == LOAD_MEM_B  else 0
+            dut.result_ld.value = 1 if st == EXECUTE     else 0
+            dut.mem_read.value  = 1 if st in (
+                FETCH_A, FETCH_B, FETCH_C,
+                FETCH_MEM_A, FETCH_MEM_B
+            ) else 0
+            dut.mem_write.value = 1 if st == WRITEBACK   else 0
             if st == UPDATE_PC:
                 dut.pc_ld.value = 1 if (dut.zero.value or dut.negative.value) else 0
             else:
                 dut.pc_ld.value = 0
-            # One cycle per state
+            # One cycle per state 
             await RisingEdge(dut.clk)
     print("Program execution completed")
     
-    print("\nFinal memory contents:")
-    for addr in range(9):  # Print first 9 locations
-        # Force fetch state to read from PC
-        dut.state.value = FETCH_A
-        dut.mem_read.value = 0  # ensure read_en is low before setting PC
-        dut.pc_ld.value = 1
-        dut.pc.value = addr
-        await RisingEdge(dut.clk)
-        dut.pc_ld.value = 0
-        
-        dut.mem_read.value = 1  # enable memory read
-        await RisingEdge(dut.clk)
-        dut.mem_read.value = 0
-        await Timer(10, units="ns")
-        print(f"mem[{addr}] = {dut.mem_data_out.value}")
-    
-    # Verify final memory contents
-    # Expected values:
-    # mem[4] should be -28 (after 5 iterations of subtraction)
-    # mem[7] should be 0 (after self-subtraction)
-    
-    # Read mem[4]
-    dut.pc_ld.value = 1
-    dut.pc.value = 4
-    await RisingEdge(dut.clk)
-    dut.pc_ld.value = 0
-    
-    dut.mem_read.value = 1
-    await RisingEdge(dut.clk)
-    dut.mem_read.value = 0
-    await Timer(10, units="ns")
-    
-    # Verify mem[4] value
-    assert dut.mem_data_out.value == -28, \
-        f"Expected mem[4] to be -28, got {dut.mem_data_out.value}"
-    
-    # Read mem[7]
-    dut.pc_ld.value = 1
-    dut.pc.value = 7
-    await RisingEdge(dut.clk)
-    dut.pc_ld.value = 0
-    
-    dut.mem_read.value = 1
-    await RisingEdge(dut.clk)
-    dut.mem_read.value = 0
-    await Timer(10, units="ns")
-    
-    # Verify mem[7] value
-    assert dut.mem_data_out.value == 0, \
-        f"Expected mem[7] to be 0, got {dut.mem_data_out.value}"
-

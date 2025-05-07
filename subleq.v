@@ -4,17 +4,22 @@ module subleq(
 );
 
     // State register
-    reg [2:0] state;
+    reg [3:0] state;
     
-    // State definitions
-    localparam FETCH_A = 3'b000;
-    localparam FETCH_B = 3'b001;
-    localparam FETCH_C = 3'b010;
-    localparam FETCH_MEM_A = 3'b011;
-    localparam FETCH_MEM_B = 3'b100;
-    localparam EXECUTE = 3'b101;
-    localparam WRITEBACK = 3'b110;
-    localparam UPDATE_PC = 3'b111;
+    // State definitions (4-bit)
+    localparam FETCH_A     = 4'd0;
+    localparam LOAD_A      = 4'd1;
+    localparam FETCH_B     = 4'd2;
+    localparam LOAD_B      = 4'd3;
+    localparam FETCH_C     = 4'd4;
+    localparam LOAD_C      = 4'd5;
+    localparam FETCH_MEM_A = 4'd6;
+    localparam LOAD_MEM_A  = 4'd7;
+    localparam FETCH_MEM_B = 4'd8;
+    localparam LOAD_MEM_B  = 4'd9;
+    localparam EXECUTE     = 4'd10;
+    localparam WRITEBACK   = 4'd11;
+    localparam UPDATE_PC   = 4'd12;
 
     // Control signals
     wire a_ld;
@@ -32,20 +37,26 @@ module subleq(
     wire negative;
     wire [63:0] mem_data_out;
 
-    // State machine
+    // Expanded FSM with read/load separation
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             state <= FETCH_A;
         end else begin
             case (state)
-                FETCH_A: state <= FETCH_B;
-                FETCH_B: state <= FETCH_C;
-                FETCH_C: state <= FETCH_MEM_A;
-                FETCH_MEM_A: state <= FETCH_MEM_B;
-                FETCH_MEM_B: state <= EXECUTE;
-                EXECUTE: state <= WRITEBACK;
-                WRITEBACK: state <= UPDATE_PC;
-                UPDATE_PC: state <= FETCH_A;
+                FETCH_A:     state <= LOAD_A;
+                LOAD_A:      state <= FETCH_B;
+                FETCH_B:     state <= LOAD_B;
+                LOAD_B:      state <= FETCH_C;
+                FETCH_C:     state <= LOAD_C;
+                LOAD_C:      state <= FETCH_MEM_A;
+                FETCH_MEM_A: state <= LOAD_MEM_A;
+                LOAD_MEM_A:  state <= FETCH_MEM_B;
+                FETCH_MEM_B: state <= LOAD_MEM_B;
+                LOAD_MEM_B:  state <= EXECUTE;
+                EXECUTE:     state <= WRITEBACK;
+                WRITEBACK:   state <= UPDATE_PC;
+                UPDATE_PC:   state <= FETCH_A;
+                default:     state <= FETCH_A;
             endcase
         end
     end
