@@ -113,10 +113,9 @@ module datapath(
             result_reg <= 64'h0;
         end else begin
             // PC update
-            if (pc_ld) begin
-                pc <= next_pc;
-                $display("PC updated to: %d", next_pc);
-            end
+            // pc <= next_pc; no need to judge pc_ld cause pc_incre will do it
+            pc <= next_pc;
+            $display("PC updated to: %d", next_pc);
 
             // Register updates
             if (a_ld) begin

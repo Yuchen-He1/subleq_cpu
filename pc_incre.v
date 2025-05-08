@@ -12,15 +12,15 @@ module pc_incre(
     localparam UPDATE_PC = 4'd12;
 
     // Calculate next PC value
-    wire [63:0] pc_plus_24;
-    assign pc_plus_24 = pc + 64'd24;
+    wire [63:0] pc_plus_3;
+    assign pc_plus_3 = pc + 64'd3;
 
     // Select next PC value based on pc_ld and state
     always @(*) begin
         if (state == UPDATE_PC && pc_ld) begin
             next_pc = c;  // Branch target
         end else if (state == UPDATE_PC) begin
-            next_pc = pc_plus_24;  // Next instruction
+            next_pc = pc_plus_3;  // Next instruction
         end else begin
             next_pc = pc;  // Keep current PC
         end
