@@ -21,6 +21,11 @@ async def test_subleq_top_run(dut):
     for _ in range(38):
         await RisingEdge(dut.clk)
 
+    # Dump first 32 memory entries
+    for i in range(32):
+        val = dut.dp_inst.mem_inst.mem[i].value.integer
+        cocotb.log.info(f"mem[{i}] = 0x{val:016x}")
+
     # Read internal PC from datapath instance
     # pc = dut.dp_inst.pc.value.integer
     # cocotb.log.info(f"PC after simulation: {pc}")
