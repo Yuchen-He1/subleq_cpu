@@ -13,10 +13,10 @@ module memory(
     
     // Initialize memory with program
     initial begin
-        $readmemh("program.hex", mem);
+        $readmemh("fib_8_loop_new.hex", mem);
         // Debug print
         $display("Memory initialized:");
-        for (integer i = 0; i < 9; i = i + 1) begin
+        for (integer i = 0; i < 62; i = i + 1) begin
             $display("mem[%0d] = %h", i, mem[i]);
         end
     end

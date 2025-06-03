@@ -11,12 +11,12 @@ VERILATOR_ARGS += -Wno-WIDTHTRUNC
 
 # Verilog source files for subleq design (relative paths)
 VERILOG_SOURCES = \
-    ../../subleq.v \
-    ../../control.v \
-    ../../datapath.v \
-    ../../memory.v \
-    ../../pc_incre.v \
-    ../../alu.v
+    ../../hw_sim/subleq.v \
+    ../../hw_sim/control.v \
+    ../../hw_sim/datapath.v \
+    ../../hw_sim/memory.v \
+    ../../hw_sim/pc_incre.v \
+    ../../hw_sim/alu.v
 
 # Top-level module and Python test module
 TOPLEVEL    = subleq
