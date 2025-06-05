@@ -36,7 +36,7 @@ async def test_subleq_top_run(dut):
 
 
 
-    # dump memory
+    # dump  data memory
     for i in range(10):
         val = dut.dp_inst.mem_inst.mem[i].value.integer
         cocotb.log.info(f"mem[{i}] = 0x{val:016x}")
