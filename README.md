@@ -1,6 +1,8 @@
-# SUBLEQ Fibonacci Calculator
+# Taste of SUBLEQ architecture design and Programing 
 
-A loop-based implementation of Fibonacci sequence calculator using SUBLEQ (SUbtract and Branch if Less than or EQual to zero) architecture.
+A loop-based implementation of Fibonacci sequence runs on SUBLEQ processor.
+## subleq overall design hand drawing graph
+![subleq overall design hand drawing graph](subleq_design.jpg)
 
 ## Overview
 

@@ -80,14 +80,11 @@ Or use GUI:
 
 ### Outputs
 - **SEG[6:0]**: 7-segment display segments (active low)
-- **AN[7:0]**: 7-segment display anodes (active low)
+- **AN[0]**: 7-segment display anodes (active low)
 - **LED[15:0]**: 16 LED indicators
 
 ### LED Function Description
 - `LED[15：0]`: Result register lower 16 bits
 
 ### 7-Segment Display
-- Displays CPU state and result register lower 16 bits
-- Left 3 digits: Show `000`
 - 5th digit: Show CPU state (0-C hexadecimal)
-- Right 4 digits: Show result register lower 16 bits
