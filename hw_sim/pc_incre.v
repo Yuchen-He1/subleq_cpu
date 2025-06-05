@@ -17,12 +17,14 @@ module pc_incre(
 
     // Select next PC value based on pc_ld and state
     always @(*) begin
-        if (state == UPDATE_PC && pc_ld) begin
-            next_pc = c;  // Branch target
-        end else if (state == UPDATE_PC) begin
-            next_pc = pc_plus_3;  // Next instruction
+        if (state == UPDATE_PC) begin
+            if (pc_ld) begin
+                next_pc = c;  // Branch target when zero or negative
+            end else begin
+                next_pc = pc_plus_3;  // Next instruction when positive
+            end
         end else begin
-            next_pc = pc;  // Keep current PC
+            next_pc = pc;  // Keep current PC in other states
         end
     end
 
