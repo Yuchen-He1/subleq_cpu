@@ -1,10 +1,35 @@
 # Taste of SUBLEQ architecture design and Programing 
-
 A loop-based implementation of Fibonacci sequence runs on SUBLEQ processor.
 ## subleq overall design hand drawing graph
 ![subleq overall design hand drawing graph](subleq_design.jpg)
+## Microarchitecture Design
+### Synchronous read/write and single port memory
+9 states for  Synchronous read/write and single port memory:
+Fetch A  
+Fetch B, Load A 
+Fetch C, Load B 
+Fetch Mem[A], Load C  
+Fetch Mem[B], Load Mem[A]& Load Mem[B]
+Execute
+Writeback  
+Update_PC
+### Synchronous read/write and dual ports memory
+7 states for  Synchronous read/write and Dual ports memory:
+Fetch AB & Load AB
+Fetch Mem[A],Mem[B] & Load Mem[A],Mem[B]
+Execute,Fetch C&Load C 
+Writeback, Update_PC 
 
-## Overview
+## To run test
+```
+cd ./test
+python3 -m venv
+source ./venv/bin/activate
+cd  subleq_test directory 
+make 
+```
+
+## Fib(8) Program Overview
 
 This program calculates the 8th Fibonacci number (21) using a single instruction set computer (SUBLEQ) architecture. The implementation uses a compact loop structure instead of unrolled iterations.
 
