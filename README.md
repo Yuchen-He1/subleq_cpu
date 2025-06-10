@@ -25,6 +25,7 @@ Writeback, Update_PC
 cd ./test
 python3 -m venv
 source ./venv/bin/activate
+pip install cocotb
 cd  subleq_test directory 
 make 
 ```
@@ -134,4 +135,3 @@ SUBLEQ ZERO, ZERO, LOOP_START
 - `hw_sim/`: Hardware simulation modules
 - `test/subleq/`: Test files and simulation scripts
 
-```
